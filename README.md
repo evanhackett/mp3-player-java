@@ -1,7 +1,7 @@
 
 # mp3 player
 
-This project contains modifications to the mp3 player presented in the textbook "Objects First with Java - A Practical Introduction using BlueJ".
+This project contains modifications to the mp3 player presented in the textbook "Objects First with Java - A Practical Introduction using BlueJ". The original code for projects in the book can be downloaded here: https://www.bluej.org/objects-first/index.html
 
 I have made the following modifications:
 
