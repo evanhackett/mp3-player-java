@@ -25,7 +25,12 @@ public class MusicPlayerGUI extends JFrame
     private static final String DEFAULT_AUDIO_DIR = "./audio-files";
 
     private JList<String> fileList;
+    private JSlider slider;
     private JLabel infoLabel;
+    private JButton playButton;
+    private JButton pauseButton;
+    private JButton stopButton;
+    private JButton resumeButton;
     private MusicOrganizer organizer;
     // A player for the music tracks.
     private MusicPlayer player;
@@ -33,6 +38,16 @@ public class MusicPlayerGUI extends JFrame
     private List<Track> trackList;
     // The directory chooser which allows users to change the mp3 source directory.
     private final JFileChooser directoryChooser;
+
+    // keeps track of if an mp3 file is currently playing, paused, or stopped.
+    private enum PlaybackState {
+        PLAYING,
+        PAUSED,
+        STOPPED
+    }
+
+    private PlaybackState playbackState;
+
 
     /**
      * Main method for starting the player from a command line.
@@ -52,8 +67,33 @@ public class MusicPlayerGUI extends JFrame
         organizer = new MusicOrganizer(audioFolder);
         player = new MusicPlayer();
         directoryChooser = new JFileChooser();
+        playbackState = PlaybackState.STOPPED;
 
         makeFrame();
+    }
+
+    private void setPlaybackState(PlaybackState state) {
+        playbackState = state;
+
+        if (state == PlaybackState.PLAYING) {
+            slider.setEnabled(true);
+            playButton.setEnabled(false);
+            resumeButton.setEnabled(false);
+            stopButton.setEnabled(true);
+            pauseButton.setEnabled(true);
+        } else if (state == PlaybackState.PAUSED) {
+            slider.setEnabled(true);
+            playButton.setEnabled(true);
+            resumeButton.setEnabled(true);
+            stopButton.setEnabled(false);
+            pauseButton.setEnabled(false);
+        } else if (state == PlaybackState.STOPPED) {
+            slider.setEnabled(false);
+            playButton.setEnabled(true);
+            resumeButton.setEnabled(false);
+            stopButton.setEnabled(false);
+            pauseButton.setEnabled(false);
+        }
     }
 
     /**
@@ -71,6 +111,9 @@ public class MusicPlayerGUI extends JFrame
 
             // refresh the track display
             setListOrdering(Track.FIELDS[0]);
+
+            // disable play button since there won't be a selection when the new list first loads.
+            playButton.setEnabled(false);
         }
 
     }
@@ -84,7 +127,9 @@ public class MusicPlayerGUI extends JFrame
     {
         int index = fileList.getSelectedIndex();
         if(index >= 0 && index < trackList.size()) {
+            slider.setValue(0);
             player.startPlaying(trackList.get(index).getFilename());
+            setPlaybackState(PlaybackState.PLAYING);
         }
     }
 
@@ -94,6 +139,7 @@ public class MusicPlayerGUI extends JFrame
     private void stop()
     {
         player.stop();
+        setPlaybackState(PlaybackState.STOPPED);
     }
 
     /**
@@ -102,6 +148,7 @@ public class MusicPlayerGUI extends JFrame
     private void pause()
     {
         player.pause();
+        setPlaybackState(PlaybackState.PAUSED);
     }
 
     /**
@@ -110,6 +157,25 @@ public class MusicPlayerGUI extends JFrame
     private void resume()
     {
         player.resume();
+        setPlaybackState(PlaybackState.PLAYING);
+    }
+
+    /**
+     * Skips to a section of the track.
+     * @param sliderValue The position of the slider, int between 0 and 100.
+     */
+    private void skip(int sliderValue)
+    {
+        final int numFrames = player.getLength();
+        // convert sliderValue into a frame position based on numFrames
+        final int position = (int) Math.round((double) sliderValue / 100 * numFrames);
+        player.seekTo(position);
+
+        // seekTo causes the audio player to pause, so we want to resume it
+        // if the player was in a playing state when they moved the slider
+        if (playbackState == PlaybackState.PLAYING) {
+            player.resume();
+        }
     }
 
     /**
@@ -211,6 +277,18 @@ public class MusicPlayerGUI extends JFrame
             fileList.setSelectionBackground(new Color(87,49,134));
             fileList.setSelectionForeground(new Color(140,171,226));
 
+            fileList.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedIndex = fileList.getSelectedIndex();
+                        if (selectedIndex != -1) {
+                            playButton.setEnabled(true);
+                        }
+                    }
+                }
+            });
+
             // play on double-click
             fileList.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
@@ -239,6 +317,39 @@ public class MusicPlayerGUI extends JFrame
         }
         contentPane.add(leftPane, BorderLayout.CENTER);
 
+        // Create the center with text label, and slider
+       JPanel centerPane = new JPanel();
+        {
+            centerPane.setLayout(new BorderLayout(8, 8));
+
+            centerPane.setBackground(Color.BLACK);
+
+            infoLabel = new JLabel("  ");
+            infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            infoLabel.setForeground(new Color(140,171,226));
+            centerPane.add(infoLabel, BorderLayout.CENTER);
+
+            slider = new JSlider(0, 100, 0);
+            TitledBorder border = new TitledBorder("Seek");
+            border.setTitleColor(Color.white);
+            slider.setBorder(new CompoundBorder(new EmptyBorder(6, 10, 10, 10), border));
+            slider.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (slider.isEnabled()) {
+                        int sliderValue = slider.getValue();
+                        skip(sliderValue);
+                    }
+                }
+            });
+            slider.setBackground(Color.BLACK);
+            slider.setMajorTickSpacing(25);
+            slider.setPaintTicks(true);
+            slider.setEnabled(false);
+            centerPane.add(slider, BorderLayout.SOUTH);
+        }
+        contentPane.add(centerPane, BorderLayout.EAST);
+
         // Create the toolbar with the buttons
         JPanel toolbar = new JPanel();
         {
@@ -248,22 +359,25 @@ public class MusicPlayerGUI extends JFrame
             button.addActionListener(e -> changeSourceDir());
             toolbar.add(button);
 
-            button = new JButton("Play");
-            button.addActionListener(e -> play());
-            toolbar.add(button);
+            playButton = new JButton("Play");
+            playButton.addActionListener(e -> play());
+            toolbar.add(playButton);
+            playButton.setEnabled(false);
 
-            button = new JButton("Stop");
-            button.addActionListener(e -> stop());
-            toolbar.add(button);
+            stopButton = new JButton("Stop");
+            stopButton.addActionListener(e -> stop());
+            toolbar.add(stopButton);
+            stopButton.setEnabled(false);
 
-            button = new JButton("Pause");
-            button.addActionListener(e -> pause());
-            toolbar.add(button);
+            pauseButton = new JButton("Pause");
+            pauseButton.addActionListener(e -> pause());
+            toolbar.add(pauseButton);
+            pauseButton.setEnabled(false);
 
-            button = new JButton("Resume");
-            button.addActionListener(e -> resume());
-            toolbar.add(button);
-
+            resumeButton = new JButton("Resume");
+            resumeButton.addActionListener(e -> resume());
+            toolbar.add(resumeButton);
+            resumeButton.setEnabled(false);
         }
 
         contentPane.add(toolbar, BorderLayout.NORTH);
