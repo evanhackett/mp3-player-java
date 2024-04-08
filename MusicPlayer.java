@@ -9,7 +9,7 @@ import javazoom.jl.player.FactoryRegistry;
 /**
  * Provide basic playing of MP3 files via the javazoom library.
  * See http://www.javazoom.net/
- * 
+ *
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29
  */
@@ -19,7 +19,7 @@ public class MusicPlayer
     private MusicFilePlayer player;
     // The current file being played.
     private String filename;
-    
+
     /**
      * Constructor for objects of class MusicPlayer
      */
@@ -28,7 +28,7 @@ public class MusicPlayer
         player = null;
         filename = "";
     }
-    
+
     /**
      * Start playing the given audio file.
      * The method returns once the playing has been started.
@@ -44,7 +44,7 @@ public class MusicPlayer
             reportProblem();
         }
     }
-    
+
     /**
      * Stop playing the current file.
      */
@@ -52,7 +52,7 @@ public class MusicPlayer
     {
         killPlayer();
     }
-    
+
     /**
      * Pause the current file.
      */
@@ -68,7 +68,7 @@ public class MusicPlayer
             }
         }
     }
-    
+
     /**
      * Resume playing following a pause.
      */
@@ -91,11 +91,11 @@ public class MusicPlayer
             playerThread.start();
         }
     }
-    
+
     /**
      * Seek to the given position in the current file.
      * The track will be paused as a result of this operation.
-     * 
+     *
      * @param position What position in the file to move to.
      */
     public void seekTo(int position)
@@ -103,13 +103,12 @@ public class MusicPlayer
         if(player != null && position >= 0 && position < player.getLength()) {
             // Set the player's position.
         }
-            
     }
-    
+
     /**
      * Return the length of the current music file, if any.
      * The length is in 'frames' rather than seconds, for instance.
-     * 
+     *
      * @return The file length in frames.
      */
     public int getLength()
@@ -121,7 +120,7 @@ public class MusicPlayer
             return 0;
         }
     }
-    
+
     /**
      * Set up the player ready to play the given file.
      * @param filename The name of the file to play.
@@ -142,7 +141,7 @@ public class MusicPlayer
             killPlayer();
         }
     }
-    
+
     /**
      * Play from the given position.
      * @param start The starting position for playing.
@@ -179,7 +178,7 @@ public class MusicPlayer
             }
         }
     }
-    
+
     /**
      * Report a problem playing the current file.
      */
