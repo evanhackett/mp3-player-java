@@ -25,7 +25,7 @@ First `cd` into the project directory.
 Then compile the program:
 
 ```
-javac MusicPlayerGUI.java
+javac -cp ./+libs/jl1.0.1.jar:. MusicPlayer.java
 ```
 
 Then run the program by specifying the classpath of the JAR dependency (the JAR contains the javazoom library for playing mp3 files):
