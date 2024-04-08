@@ -9,13 +9,16 @@ I have made the following modifications:
 
 * added ability to change source directory of mp3 files (the original program was hardcoded to use a specific directory)
 * after changing source dir, refreshes the audio files list
-* got rid of useless slider, got rid of background image
+* got rid of background image
 * changed it to just show file name instead of relying on file naming convention to parse out artist/title.
   * The original program required a specific file naming convention for the mp3 files in order to determine the artist/title/etc. Since my audio files don't use this naming convention, I got rid of this feature and instead I just display the filename itself.
 * got rid of tracklist ordering dropdown (this required the file naming convention mentioned above to be useful, so I just got rid of it)
 * made it so double-clicking the song file will play it (before you had to select the file in the list and then click the play button, it was very cumbersome)
 * made it so pressing the enter key on a song selection will play it
 * made it so change source dir dialog reopens at the current dir, instead of opening from home dir every time
+* disable/enable buttons so they are only enabled when they can be reasonably used (like if no song is playing then "stop" should be disabled)
+* implement functionality for the slider
+  * the original program's slider didn't do anything. Now it automatically moves as the song plays, and you can use it to skip around
 
 
 ## How to compile and run the program
