@@ -21,6 +21,8 @@ I have made the following modifications:
   * the original program's slider didn't do anything. Now it automatically moves as the song plays, and you can use it to skip around
   * **note**: the seek feature seems slow/buggy, but that may have more to do with the author's original code, rather than how I implemented seek. I am using the provided `setPosition` function within `MusicFilePlayer` to seek to a new location. `setPosition` itself seems to be causing the problems...
 
+The file where I made the most changes would definitely be `MusicPlayerGUI.java`, although I did make some changes to some of the other files as well.
+
 ## How to compile and run the program
 
 First `cd` into the project directory.
