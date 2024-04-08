@@ -38,6 +38,8 @@ public class MusicPlayerGUI extends JFrame
     private List<Track> trackList;
     // The directory chooser which allows users to change the mp3 source directory.
     private final JFileChooser directoryChooser;
+    // timer is used to periodically update the slider position.
+    private Timer timer;
 
     // keeps track of if an mp3 file is currently playing, paused, or stopped.
     private enum PlaybackState {
@@ -68,6 +70,22 @@ public class MusicPlayerGUI extends JFrame
         player = new MusicPlayer();
         directoryChooser = new JFileChooser();
         playbackState = PlaybackState.STOPPED;
+
+        // Create a Timer to update the slider position periodically
+        timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the slider position based on the current song position
+                int currentPosition = player.getPosition();
+
+                if (playbackState == PlaybackState.PLAYING && currentPosition > 0) {
+                    int totalLength = player.getLength();
+                    int currentSliderPosition = (int) Math.round(((double) currentPosition / totalLength) * 100);
+                    slider.setValue(currentSliderPosition);
+                }
+            }
+        });
+        timer.start();
 
         makeFrame();
     }
@@ -171,8 +189,8 @@ public class MusicPlayerGUI extends JFrame
         final int position = (int) Math.round((double) sliderValue / 100 * numFrames);
         player.seekTo(position);
 
-        // seekTo causes the audio player to pause, so we want to resume it
-        // if the player was in a playing state when they moved the slider
+        // seekTo causes the audio player to pause, so we want to resume it if the
+        // player was in a playing state when they moved the slider
         if (playbackState == PlaybackState.PLAYING) {
             player.resume();
         }
@@ -335,13 +353,23 @@ public class MusicPlayerGUI extends JFrame
             slider.setBorder(new CompoundBorder(new EmptyBorder(6, 10, 10, 10), border));
             slider.addMouseListener(new MouseAdapter() {
                 @Override
+                public void mousePressed(MouseEvent e) {
+                    // Pause the timer when the user clicks on the slider
+                    timer.stop();
+                }
+
+                @Override
                 public void mouseReleased(MouseEvent e) {
+                    // Resume the timer when the user releases the mouse button
+                    timer.start();
+
                     if (slider.isEnabled()) {
                         int sliderValue = slider.getValue();
                         skip(sliderValue);
                     }
                 }
             });
+
             slider.setBackground(Color.BLACK);
             slider.setMajorTickSpacing(25);
             slider.setPaintTicks(true);

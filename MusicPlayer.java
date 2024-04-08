@@ -128,6 +128,22 @@ public class MusicPlayer
     }
 
     /**
+     * Return the current position of the current music file, if any.
+     * The position is in 'frames' rather than seconds, for instance.
+     *
+     * @return The file position in frames.
+     */
+    public int getPosition()
+    {
+        if(player != null) {
+            return player.getPosition();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /**
      * Set up the player ready to play the given file.
      * @param filename The name of the file to play.
      */
