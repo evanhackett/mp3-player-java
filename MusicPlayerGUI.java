@@ -82,6 +82,11 @@ public class MusicPlayerGUI extends JFrame
                     int totalLength = player.getLength();
                     int currentSliderPosition = (int) Math.round(((double) currentPosition / totalLength) * 100);
                     slider.setValue(currentSliderPosition);
+
+                    // also set playbackState to stopped if the song is over
+                    if (currentPosition == totalLength) {
+                        setPlaybackState(PlaybackState.STOPPED);
+                    }
                 }
             }
         });
