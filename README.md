@@ -125,7 +125,7 @@ toolbar.add(button);
 
 Clicking on this button triggers the callback function `changSourceDir`. To implement this I had to learn about `JFileChooser`. I found the Oracle docs for Java Swing helpful: [How to Use File Choosers - docs.oracle.com](https://docs.oracle.com/javase/tutorial/uiswing///components/filechooser.html).
 
-The code is pretty straightforward. You set the file chooser to `DIRECTORIES_ONLY` mode to make sure the user can only select a directory (and not an individual file). Then you open the chooser dialog. If the user made a selection, we set instantiate a new `MusicOrganizer` with the chosen directory. We then do some UI update stuff like refreshing the track list.
+The code is pretty straightforward. You set the file chooser to `DIRECTORIES_ONLY` mode to make sure the user can only select a directory (and not an individual file). Then you open the chooser dialog. If the user made a selection, we instantiate a new `MusicOrganizer` with the chosen directory. We then do some UI update stuff like refreshing the track list.
 
 ```java
 /**
