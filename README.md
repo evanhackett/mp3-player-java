@@ -200,3 +200,153 @@ To start:
 Create a MusicPlayerGUI object.
 Select a track from the list and play it.
 
+# Loop examples
+
+**Update May 20th**: Hunter College was concerned that my code didn't have a "loop structure", so I wrote a second code sample that demonstrated various ways of looping.
+
+```java
+/*
+ * To demonstrate looping, I have written out 4 different ways of solving a simple problem.
+ * The problem is simply to take an array of strings and uppercase all of the strings in the array.
+ *
+ * My 4 examples cover the following ways of looping:
+ *
+ * 1. for loop
+ * 2. while loop
+ * 3. recursive loop
+ * 4. higher-order function
+ *
+ */
+
+
+
+import java.util.Arrays;
+
+public class LoopExamples {
+    public static void main(String[] args) {
+        LoopExamples loopExamples = new LoopExamples();
+
+        String[] strings = {"abc", "hello", "This is a string."};
+
+        System.out.println("Example 1: \"for\" loop.\n");
+        System.out.print("Input array: ");
+        loopExamples.printStringArray(strings);
+
+        System.out.print("Output array: ");
+        loopExamples.printStringArray(loopExamples.forLoopExample(strings));
+
+        System.out.println("\nExample 2: \"while\" loop.\n");
+        System.out.print("Input array: ");
+        loopExamples.printStringArray(strings);
+
+        System.out.print("Output array: ");
+        loopExamples.printStringArray(loopExamples.whileLoopExample(strings));
+
+        System.out.println("\nExample 3: Recursive loop.\n");
+        System.out.print("Input array: ");
+        loopExamples.printStringArray(strings);
+
+        System.out.print("Output array: ");
+        loopExamples.printStringArray(loopExamples.recursionExample(strings));
+
+        System.out.println("\nExample 4: Higher-order Functions (Map).\n");
+        System.out.print("Input array: ");
+        loopExamples.printStringArray(strings);
+
+        System.out.print("Output array: ");
+        loopExamples.printStringArray(loopExamples.mapExample(strings));
+    }
+
+    /*
+     * This is simply a method prints out the contents of an array on one line, in a readable format.
+     */
+    private void printStringArray(String[] strings) {
+        System.out.print("[");
+
+        for (int i = 0; i < strings.length; i++) {
+            System.out.print('"');
+            System.out.print(strings[i]);
+            System.out.print('"');
+
+            if (i != strings.length - 1) {
+                System.out.print(", ");
+            }
+        }
+
+        System.out.print("]\n");
+    }
+
+
+    /*
+     * This is the classic for loop, found in all C-style languages.
+     */
+    private String[] forLoopExample(String[] strings) {
+        String[] upperCased = new String[strings.length];
+
+        for (int i = 0; i < strings.length; i++) {
+            upperCased[i] = strings[i].toUpperCase();
+        }
+
+        return upperCased;
+    }
+
+    /*
+     * This is what you would do if you didn't have for loops.
+     * For-loops are basically syntactic sugar for using a while loop in this way.
+     */
+    private String[] whileLoopExample(String[] strings) {
+        String[] upperCased = new String[strings.length];
+
+        int i = 0;
+        while (i < strings.length) {
+            upperCased[i] = strings[i].toUpperCase();
+            i++;
+        }
+
+        return upperCased;
+    }
+
+    /*
+     * This is what you would do if your language didn't have any special loop syntax.
+     * To keep the interface consistent with the other examples, I defined a separate
+     * method to actually do the recursion, since we need to pass in additional arguments.
+     */
+    private String[] recursionExample(String[] strings) {
+        String[] upperCased = new String[strings.length];
+
+        recurse(strings, upperCased, 0);
+
+        return upperCased;
+    }
+
+
+    /*
+     * This is the recursive helper-function for recursionExample.
+     * I would prefer to define this function inside of recursionExample, but Java doesn't allow defining
+     * functions inside of functions, as far as I know.
+     */
+    private void recurse(String[] inputStrings, String[] outputStrings, int index) {
+        if (index >= inputStrings.length) {
+            return;
+        }
+
+        outputStrings[index] = inputStrings[index].toUpperCase();
+
+        recurse(inputStrings, outputStrings, index + 1);
+    }
+
+
+    /*
+     * This is the modern way to solve this problem.
+     * In the real world, especially in newer languages, people usually aren't explicitly writing out loops for problems like this.
+     * This is the solution I personally prefer out of all the examples.
+     */
+    private String[] mapExample(String[] strings) {
+        return Arrays.stream(strings)
+            .map(s -> s.toUpperCase())
+            .toArray(String[]::new);
+    }
+
+}
+
+```
